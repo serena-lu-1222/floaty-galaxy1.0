@@ -1338,9 +1338,11 @@
             astro.invulnTimer = 1.4;
             screenShake = 10;
 
-            const themeColor = astro.type === 'pink' ? '#fbb6d3' : '#b9dcfa';
-            spawnParticles(hitX, hitY, '#ff6b81', 16, 180);
-            spawnParticles(astro.x, astro.y, themeColor, 10, 120);
+            const isPink = astro.type === 'pink';
+            const mainColor = isPink ? '#fbb6d3' : '#b9dcfa';
+            const lightColor = isPink ? '#ffd4e6' : '#dcf0ff';
+            spawnParticles(hitX, hitY, mainColor, 16, 180);
+            spawnParticles(astro.x, astro.y, lightColor, 10, 120);
             updateHeartsUI();
 
             if (astro.hp <= 0) {
