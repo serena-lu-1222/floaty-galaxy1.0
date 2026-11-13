@@ -641,14 +641,14 @@
             ctx.ellipse(0, -25, 29, 24, 0, 0, Math.PI * 2);
             ctx.clip();
 
-            // 瀏海
+            // 瀏海 (調整 Luna 瀏海為左右完全對稱置中)
             ctx.fillStyle = hairColor;
             ctx.beginPath();
             if (isPink) {
                 ctx.arc(0, -26, 28.5, Math.PI * 1.03, Math.PI * 1.97);
-                ctx.quadraticCurveTo(18, -32, 10, -37);
-                ctx.quadraticCurveTo(2, -31, -6, -37);
-                ctx.quadraticCurveTo(-16, -30, -28.2, -28);
+                ctx.quadraticCurveTo(18, -31, 8, -37);
+                ctx.quadraticCurveTo(0, -31, -8, -37);
+                ctx.quadraticCurveTo(-18, -31, -28.3, -28.6);
             } else {
                 ctx.arc(0, -26, 28.5, Math.PI * 1.03, Math.PI * 1.97);
                 ctx.quadraticCurveTo(20, -33, 14, -37);
