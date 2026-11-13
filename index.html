@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>太空飄飄</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>太空飄飄 Demo - 100% 離線永久保存版</title>
     <style>
         * {
             box-sizing: border-box;
@@ -22,14 +19,165 @@
             height: 100%;
             overflow: hidden;
             background-color: #090b16;
-            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
-            touch-action: none; /* 防止手機滑動捲動網頁 */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+            touch-action: none;
         }
         canvas {
             display: block;
             width: 100%;
             height: 100%;
         }
+
+        /* 基礎佈局與工具樣式 (取代外部 Tailwind CSS) */
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .top-0 { top: 0; }
+        .left-0 { left: 0; }
+        .right-3 { right: 0.75rem; }
+        .top-24 { top: 6rem; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .w-3 { width: 0.75rem; }
+        .h-3 { height: 0.75rem; }
+        .w-10 { width: 2.5rem; }
+        .h-10 { height: 2.5rem; }
+        .h-36 { height: 9rem; }
+        .max-w-md { max-width: 28rem; }
+        .max-w-sm { max-width: 24rem; }
+
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .items-end { align-items: flex-end; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .hidden { display: none !important; }
+
+        .gap-1 { gap: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-3-5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-5 { margin-bottom: 1.25rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+
+        .z-10 { z-index: 10; }
+        .z-20 { z-index: 20; }
+        .z-30 { z-index: 30; }
+
+        .rounded-full { border-radius: 9999px; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        .overflow-hidden { overflow: hidden; }
+        .pointer-events-none { pointer-events: none; }
+        .cursor-pointer { cursor: pointer; }
+        .inline-block { display: inline-block; }
+
+        .text-left { text-align: left; }
+        .text-center { text-align: center; }
+        .uppercase { text-transform: uppercase; }
+        .leading-relaxed { line-height: 1.625; }
+        .tracking-wide { letter-spacing: 0.025em; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .tracking-widest { letter-spacing: 0.1em; }
+
+        .font-bold { font-weight: 700; }
+        .font-black { font-weight: 900; }
+        .text-10px { font-size: 10px; line-height: 1.2; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+
+        .text-white { color: #ffffff; }
+        .text-slate-200 { color: #e2e8f0; }
+        .text-slate-300 { color: #cbd5e1; }
+        .text-slate-400 { color: #94a3b8; }
+        .text-slate-900 { color: #0f172a; }
+        .text-pink-200 { color: #fbcfe8; }
+        .text-pink-300 { color: #f9a8d4; }
+        .text-sky-200 { color: #bae6fd; }
+        .text-sky-300 { color: #7dd3fc; }
+        .text-indigo-300 { color: #a5b4fc; }
+
+        .bg-dot-pink {
+            background-color: #fbb6d3;
+            box-shadow: 0 0 8px #fbb6d3;
+        }
+        .bg-dot-sky {
+            background-color: #b9dcfa;
+            box-shadow: 0 0 8px #b9dcfa;
+        }
+        .bg-overlay-start {
+            background-color: rgba(9, 11, 22, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .bg-overlay-gameover {
+            background-color: rgba(9, 11, 22, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .bg-preview-box {
+            background-color: rgba(17, 21, 43, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bg-card-white-5 {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .border-white-10 {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-home {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .btn-home:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        .btn-start-grad {
+            border: none;
+            background-image: linear-gradient(to right, #f8a5c2, #c792ea, #82ccdd);
+            box-shadow: 0 6px 25px rgba(248, 165, 194, 0.45);
+        }
+        .btn-restart-grad {
+            border: none;
+            background-image: linear-gradient(to right, #fbb6d3, #b9dcfa);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .drop-shadow-md {
+            filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.06));
+        }
+        .heart-glow {
+            filter: drop-shadow(0 0 6px rgba(255, 107, 129, 0.8));
+            transition: transform 0.2s ease;
+        }
+        .heart-lost {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
         /* 玻璃擬態 UI */
         .glass-panel {
             background: rgba(18, 22, 43, 0.75);
@@ -38,18 +186,33 @@
             border: 2px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
+        .border-pink-hud { border-color: rgba(249, 168, 212, 0.3); }
+        .border-sky-hud { border-color: rgba(125, 211, 252, 0.3); }
+        .border-indigo-card { border: 2px solid rgba(129, 140, 248, 0.2); }
+        .border-pink-card { border: 2px solid rgba(244, 114, 182, 0.2); }
+
         .btn-bounce {
-            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, background-color 0.15s ease;
         }
         .btn-bounce:active {
             transform: scale(0.93);
         }
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-8px) rotate(2deg); }
-        }
-        .animate-float {
-            animation: floatSlow 3.5s ease-in-out infinite;
+
+        @media (min-width: 640px) {
+            .sm-p-5 { padding: 1.25rem; }
+            .sm-p-8 { padding: 2rem; }
+            .sm-px-4 { padding-left: 1rem; padding-right: 1rem; }
+            .sm-py-2-5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+            .sm-px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .sm-top-28 { top: 7rem; }
+            .sm-right-5 { right: 1.25rem; }
+            .sm-h-40 { height: 10rem; }
+            .sm-text-xs { font-size: 0.75rem; line-height: 1rem; }
+            .sm-text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+            .sm-text-base { font-size: 1rem; line-height: 1.5rem; }
+            .sm-text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+            .sm-text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+            .sm-text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
         }
     </style>
 </head>
@@ -59,61 +222,61 @@
     <canvas id="gameCanvas"></canvas>
 
     <!-- 頂部 HUD 狀態列 (遊戲進行中顯示) -->
-    <div id="hudLayer" class="hidden absolute top-0 left-0 w-full p-3 sm:p-5 flex justify-between items-start pointer-events-none z-10">
+    <div id="hudLayer" class="hidden absolute top-0 left-0 w-full p-3 sm-p-5 flex justify-between items-start pointer-events-none z-10">
         <!-- 左側：Luna 狀態 -->
-        <div class="glass-panel rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 flex flex-col items-start gap-1 border-pink-300/30">
+        <div class="glass-panel rounded-2xl px-3 py-2 sm-px-4 sm-py-2-5 flex flex-col items-start gap-1 border-pink-hud">
             <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-[#fbb6d3] inline-block shadow-[0_0_8px_#fbb6d3]"></span>
-                <span class="text-pink-200 text-xs sm:text-sm font-bold tracking-wide">Luna</span>
+                <span class="w-3 h-3 rounded-full bg-dot-pink inline-block"></span>
+                <span class="text-pink-200 text-xs sm-text-sm font-bold tracking-wide">Luna</span>
             </div>
-            <div id="pinkHearts" class="flex items-center gap-1 text-lg sm:text-xl">
+            <div id="pinkHearts" class="flex items-center gap-1 text-lg sm-text-xl">
                 <!-- 愛心動態生成 -->
             </div>
         </div>
 
         <!-- 中央：分數與距離 -->
-        <div class="glass-panel rounded-2xl px-4 py-2 sm:px-6 sm:py-2.5 flex flex-col items-center">
-            <span class="text-indigo-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest">飄流距離</span>
-            <span id="scoreDisplay" class="text-white text-xl sm:text-3xl font-black tracking-wider">0 m</span>
+        <div class="glass-panel rounded-2xl px-4 py-2 sm-px-6 sm-py-2-5 flex flex-col items-center">
+            <span class="text-indigo-300 text-10px sm-text-xs font-bold uppercase tracking-widest">飄流距離</span>
+            <span id="scoreDisplay" class="text-white text-xl sm-text-3xl font-black tracking-wider">0 m</span>
         </div>
 
         <!-- 右側：Haru 狀態 -->
-        <div class="glass-panel rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 flex flex-col items-end gap-1 border-sky-300/30">
+        <div class="glass-panel rounded-2xl px-3 py-2 sm-px-4 sm-py-2-5 flex flex-col items-end gap-1 border-sky-hud">
             <div class="flex items-center gap-2">
-                <span class="text-sky-200 text-xs sm:text-sm font-bold tracking-wide">Haru</span>
-                <span class="w-3 h-3 rounded-full bg-[#b9dcfa] inline-block shadow-[0_0_8px_#b9dcfa]"></span>
+                <span class="text-sky-200 text-xs sm-text-sm font-bold tracking-wide">Haru</span>
+                <span class="w-3 h-3 rounded-full bg-dot-sky inline-block"></span>
             </div>
-            <div id="blueHearts" class="flex items-center gap-1 text-lg sm:text-xl">
+            <div id="blueHearts" class="flex items-center gap-1 text-lg sm-text-xl">
                 <!-- 愛心動態生成 -->
             </div>
         </div>
     </div>
 
-    <!-- 音效開關按鈕 (保持與 Haru 生命值格子的適當距離) -->
-    <div id="topControls" class="hidden absolute top-24 sm:top-28 right-3 sm:right-5 flex gap-2 z-20">
+    <!-- 音效開關按鈕 -->
+    <div id="topControls" class="hidden absolute top-24 sm-top-28 right-3 sm-right-5 flex gap-2 z-20">
         <button id="soundToggleBtn" class="glass-panel w-10 h-10 rounded-full flex items-center justify-center text-white text-lg btn-bounce cursor-pointer" title="切換音效">
             🔊
         </button>
     </div>
 
     <!-- 開始畫面 Overlay -->
-    <div id="startScreen" class="absolute inset-0 flex flex-col items-center justify-center p-5 z-30 bg-[#090b16]/70 backdrop-blur-sm">
-        <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center border-2 border-indigo-400/20">
-            <h1 class="text-3xl sm:text-4xl font-black text-white mb-2 tracking-wide drop-shadow-md">
+    <div id="startScreen" class="absolute inset-0 flex flex-col items-center justify-center p-5 z-30 bg-overlay-start">
+        <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm-p-8 flex flex-col items-center text-center border-indigo-card">
+            <h1 class="text-3xl sm-text-4xl font-black text-white mb-2 tracking-wide drop-shadow-md">
                 太空飄飄
             </h1>
-            <p class="text-slate-300 text-sm sm:text-base mb-5 leading-relaxed">
+            <p class="text-slate-300 text-sm sm-text-base mb-5 leading-relaxed">
                 守護可愛的小太空人<span class="text-pink-200 font-bold">Luna</span>與<span class="text-sky-200 font-bold">Haru</span><br>
                 閃避危險的隕石與太空碎片
             </p>
 
             <!-- 角色預覽畫布 -->
-            <div class="w-full h-36 sm:h-40 rounded-2xl bg-[#11152b]/80 border border-white/10 mb-5 flex items-center justify-center overflow-hidden relative">
+            <div class="w-full h-36 sm-h-40 rounded-2xl bg-preview-box mb-5 flex items-center justify-center overflow-hidden relative">
                 <canvas id="previewCanvas" class="w-full h-full"></canvas>
             </div>
 
-            <!-- 操作與規則說明 (無 emoji、無句號、分開手機與電腦操作說明) -->
-            <div class="w-full bg-white/5 rounded-2xl p-4 mb-6 text-left space-y-2 text-xs sm:text-sm text-slate-200">
+            <!-- 操作與規則說明 -->
+            <div class="w-full bg-card-white-5 rounded-2xl p-4 mb-6 text-left space-y-2 text-xs sm-text-sm text-slate-200">
                 <div class="flex items-start gap-2">
                     <span class="text-indigo-300 font-bold">•</span>
                     <span><b>手機操作：</b>用手指拖曳移動兩位小太空人</span>
@@ -132,33 +295,33 @@
                 </div>
             </div>
 
-            <button id="startBtn" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#f8a5c2] via-[#c792ea] to-[#82ccdd] text-slate-900 font-black text-lg sm:text-xl shadow-[0_6px_25px_rgba(248,165,194,0.45)] btn-bounce cursor-pointer">
+            <button id="startBtn" class="w-full py-4 rounded-2xl btn-start-grad text-slate-900 font-black text-lg sm-text-xl btn-bounce cursor-pointer">
                 遊戲開始
             </button>
         </div>
     </div>
 
     <!-- 遊戲結束結算 Overlay -->
-    <div id="gameOverScreen" class="hidden absolute inset-0 flex flex-col items-center justify-center p-5 z-30 bg-[#090b16]/80 backdrop-blur-md">
-        <div class="glass-panel max-w-sm w-full rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center border-2 border-pink-400/20">
-            <h2 class="text-2xl sm:text-3xl font-black text-white mb-6">遊戲結束</h2>
+    <div id="gameOverScreen" class="hidden absolute inset-0 flex flex-col items-center justify-center p-5 z-30 bg-overlay-gameover">
+        <div class="glass-panel max-w-sm w-full rounded-3xl p-6 sm-p-8 flex flex-col items-center text-center border-pink-card">
+            <h2 class="text-2xl sm-text-3xl font-black text-white mb-6">遊戲結束</h2>
 
             <div class="w-full grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                <div class="bg-card-white-5 rounded-2xl p-3 border-white-10">
                     <div class="text-xs text-slate-400 mb-1">飄流距離</div>
                     <div id="finalScore" class="text-2xl font-black text-pink-300">0 m</div>
                 </div>
-                <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                <div class="bg-card-white-5 rounded-2xl p-3 border-white-10">
                     <div class="text-xs text-slate-400 mb-1">最高紀錄</div>
                     <div id="bestScore" class="text-2xl font-black text-sky-300">0 m</div>
                 </div>
             </div>
 
             <div class="w-full flex flex-col gap-3">
-                <button id="restartBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#fbb6d3] to-[#b9dcfa] text-slate-900 font-black text-lg shadow-lg btn-bounce cursor-pointer">
+                <button id="restartBtn" class="w-full py-3-5 rounded-2xl btn-restart-grad text-slate-900 font-black text-lg btn-bounce cursor-pointer">
                     再次出發
                 </button>
-                <button id="homeBtn" class="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-base btn-bounce cursor-pointer">
+                <button id="homeBtn" class="w-full py-3 rounded-2xl btn-home font-bold text-base btn-bounce cursor-pointer">
                     回主畫面
                 </button>
             </div>
@@ -167,89 +330,139 @@
 
     <script>
         /**
-         * 太空飄飄
-         * 核心設計：
-         * 1. 嚴格還原兩位小太空人角色外觀（Luna 與 Haru），包含漂浮姿態、手部揮動、臉部可愛表情與柔和褐色描邊。
-         * 2. 支援多點觸控 (Multi-touch)，玩家可同時用雙手拖曳控制兩位太空人；同時支援滑鼠與鍵盤 WASD / 方向鍵。
-         * 3. 獨立生命值系統（各 3 條命），吃到回血愛心可回復生命；其中一人歸零後色彩變暗並受重力往下掉落且無法操控，另一人可繼續遊戲。
+         * 太空飄飄 Demo - 100% 離線永久保存版
+         * 零外部網路連線依賴，採用原生 Web Audio API 合成音效、HTML5 Canvas 向量繪圖與 localStorage 永久存檔。
          */
 
         // ==========================================
-        // 1. 音效合成器 (Tone.js 無外部音檔依賴)
+        // 1. 原生 Web Audio API 音效合成器 (零外部依賴)
         // ==========================================
         class SoundManager {
             constructor() {
                 this.enabled = true;
-                this.initialized = false;
-                this.synth = null;
-                this.noiseSynth = null;
+                this.ctx = null;
+                this.noiseBuffer = null;
             }
 
             async init() {
-                if (this.initialized) return;
                 try {
-                    await Tone.start();
-                    this.synth = new Tone.PolySynth(Tone.Synth, {
-                        oscillator: { type: "triangle" },
-                        envelope: { attack: 0.02, decay: 0.15, sustain: 0.1, release: 0.4 }
-                    }).toDestination();
-                    this.synth.volume.value = -8;
-
-                    this.noiseSynth = new Tone.NoiseSynth({
-                        noise: { type: "brown" },
-                        envelope: { attack: 0.01, decay: 0.25, sustain: 0, release: 0.2 }
-                    }).toDestination();
-                    this.noiseSynth.volume.value = -10;
-                    this.initialized = true;
+                    if (!this.ctx) {
+                        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                        if (!AudioCtx) return;
+                        this.ctx = new AudioCtx();
+                        this.createNoiseBuffer();
+                    }
+                    if (this.ctx.state === 'suspended') {
+                        await this.ctx.resume();
+                    }
                 } catch (e) {
                     console.warn("Audio init skipped:", e);
                 }
             }
 
+            createNoiseBuffer() {
+                if (!this.ctx) return;
+                const sampleRate = this.ctx.sampleRate;
+                const length = sampleRate * 1.0;
+                const buffer = this.ctx.createBuffer(1, length, sampleRate);
+                const data = buffer.getChannelData(0);
+                // 產生低頻濃厚的 Brown Noise 質感
+                let lastOut = 0.0;
+                for (let i = 0; i < length; i++) {
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 3.5;
+                }
+                this.noiseBuffer = buffer;
+            }
+
+            playTone(freq, startTime, duration, type = 'triangle', peakGain = 0.16) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, startTime);
+
+                // 模擬柔和包絡線 (attack: 0.02s, decay: 0.15s, release: 0.25s)
+                gain.gain.setValueAtTime(0.0001, startTime);
+                gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(peakGain * 0.35, startTime + Math.min(duration, 0.15));
+                gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration + 0.25);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(startTime);
+                osc.stop(startTime + duration + 0.28);
+            }
+
+            playNoise(startTime, duration = 0.25, peakGain = 0.28) {
+                if (!this.ctx || !this.noiseBuffer) return;
+                const source = this.ctx.createBufferSource();
+                source.buffer = this.noiseBuffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(420, startTime);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.0001, startTime);
+                gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration + 0.15);
+
+                source.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                source.start(startTime);
+                source.stop(startTime + duration + 0.18);
+            }
+
             playHeal() {
-                if (!this.enabled || !this.initialized) return;
-                const now = Tone.now();
-                this.synth.triggerAttackRelease("C5", "16n", now);
-                this.synth.triggerAttackRelease("E5", "16n", now + 0.08);
-                this.synth.triggerAttackRelease("G5", "16n", now + 0.16);
-                this.synth.triggerAttackRelease("C6", "8n", now + 0.24);
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                // C5, E5, G5, C6
+                this.playTone(523.25, now, 0.12, 'triangle', 0.16);
+                this.playTone(659.25, now + 0.08, 0.12, 'triangle', 0.16);
+                this.playTone(783.99, now + 0.16, 0.12, 'triangle', 0.16);
+                this.playTone(1046.50, now + 0.24, 0.22, 'triangle', 0.18);
             }
 
             playHit() {
-                if (!this.enabled || !this.initialized) return;
-                const now = Tone.now();
-                this.noiseSynth.triggerAttackRelease("8n", now);
-                this.synth.triggerAttackRelease(["A2", "Eb2"], "8n", now);
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                this.playNoise(now, 0.22, 0.32);
+                // A2 (110Hz) & Eb2 (77.78Hz)
+                this.playTone(110.00, now, 0.22, 'triangle', 0.22);
+                this.playTone(77.78, now, 0.22, 'triangle', 0.22);
             }
 
             playFall() {
-                if (!this.enabled || !this.initialized) return;
-                const now = Tone.now();
-                this.synth.triggerAttackRelease("G4", "8n", now);
-                this.synth.triggerAttackRelease("E4", "8n", now + 0.15);
-                this.synth.triggerAttackRelease("C4", "8n", now + 0.30);
-                this.synth.triggerAttackRelease("G3", "4n", now + 0.45);
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                // G4, E4, C4, G3
+                this.playTone(392.00, now, 0.18, 'triangle', 0.17);
+                this.playTone(329.63, now + 0.15, 0.18, 'triangle', 0.17);
+                this.playTone(261.63, now + 0.30, 0.18, 'triangle', 0.17);
+                this.playTone(196.00, now + 0.45, 0.32, 'triangle', 0.18);
             }
 
             playStart() {
-                if (!this.enabled || !this.initialized) return;
-                const now = Tone.now();
-                this.synth.triggerAttackRelease("E4", "16n", now);
-                this.synth.triggerAttackRelease("G4", "16n", now + 0.09);
-                this.synth.triggerAttackRelease("B4", "8n", now + 0.18);
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                // E4, G4, B4
+                this.playTone(329.63, now, 0.12, 'triangle', 0.16);
+                this.playTone(392.00, now + 0.09, 0.12, 'triangle', 0.16);
+                this.playTone(493.88, now + 0.18, 0.22, 'triangle', 0.18);
             }
         }
 
         const sound = new SoundManager();
 
         // ==========================================
-        // 2. 角色高精度繪製系統 (忠實還原原圖設計)
+        // 2. 角色高精度繪製系統 (100% 保留原有視覺設計)
         // ==========================================
-        /**
-         * 繪製小太空人
-         * @param {CanvasRenderingContext2D} ctx 畫布上下文
-         * @param {Object} astro 太空人狀態物件
-         */
         function drawAstronaut(ctx, astro) {
             ctx.save();
             ctx.translate(astro.x, astro.y);
@@ -261,18 +474,17 @@
                 }
             }
 
-            // 失去三條命後的狀態：顏色漸暗（使用高效能色彩插值取代逐幀動態 CSS filter，避免手機與電腦瀏覽器卡頓）
+            // 失去三條命後的旋轉狀態
             if (!astro.alive) {
                 ctx.rotate(astro.fallRotation);
             } else {
-                // 使用經過平滑插值的 currentAngle，讓左右傾斜旋轉更加絲滑流暢
                 ctx.rotate(astro.currentAngle || 0);
             }
 
             const s = astro.scale;
             ctx.scale(s, s);
 
-            // 色彩線性插值輔助函式（用於被擊墜後平滑變暗變灰，效能極佳零卡頓）
+            // 色彩線性插值輔助函式
             const darkenPct = !astro.alive ? Math.min(1, astro.grayProgress) : 0;
             const lerpHexColor = (hex1, hex2, t) => {
                 if (t <= 0) return hex1;
@@ -284,7 +496,7 @@
                 return `rgb(${r}, ${g}, ${b})`;
             };
 
-            // 配色定義 (完全依照原圖粉紅與淺藍配色，擊墜後平滑過渡至暗灰調)
+            // 配色定義 (完全依照原圖粉紅與淺藍配色)
             const isPink = astro.type === 'pink';
             const suitColor = lerpHexColor(isPink ? '#fbb6d3' : '#b9dcfa', '#6e7280', darkenPct);
             const highlightColor = lerpHexColor(isPink ? '#ffd4e6' : '#dcf0ff', '#8b90a0', darkenPct);
@@ -306,11 +518,11 @@
             ctx.fill();
             ctx.stroke();
 
-            // --- 2. 左右手臂 (隨漂浮自然擺動) ---
+            // --- 2. 左右手臂 ---
             const waveLeft = astro.alive ? Math.sin(astro.animTime * 3.5 + astro.phaseOffset) * 0.18 : 0.25;
             const waveRight = astro.alive ? Math.cos(astro.animTime * 3.5 + astro.phaseOffset) * 0.18 : -0.25;
 
-            // 左手 (粉紅太空人揮手較高，還原圖2/圖3可愛動態)
+            // 左手
             ctx.save();
             ctx.translate(-29, 4);
             ctx.rotate((isPink ? 0.35 : 0.15) + waveLeft);
@@ -328,7 +540,7 @@
             ctx.stroke();
             ctx.restore();
 
-            // 右手 (淺藍太空人揮手較高)
+            // 右手
             ctx.save();
             ctx.translate(29, 4);
             ctx.rotate((isPink ? -0.15 : -0.35) + waveRight);
@@ -354,7 +566,6 @@
             ctx.fillStyle = suitColor;
 
             ctx.beginPath();
-            // 從左上肩開始順時針繪製圓潤連身服
             ctx.moveTo(-29, -4);
             ctx.quadraticCurveTo(-34, 18, -30, 38);
             // 左腿
@@ -381,7 +592,6 @@
             ctx.quadraticCurveTo(-16, 52, -4, 49);
             ctx.moveTo(4, 49);
             ctx.quadraticCurveTo(16, 52, 29, 49);
-            // 褲襠分岔處車縫弧線（貼合大腿內側上方，類似嬰兒連身服）
             ctx.moveTo(-4, 43);
             ctx.quadraticCurveTo(0, 41, 4, 43);
             ctx.stroke();
@@ -426,23 +636,20 @@
             ctx.ellipse(0, -25, 29, 24, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // 使用頭盔內框裁切區域，確保頭髮完美貼合內框且絕不溢出
             ctx.save();
             ctx.beginPath();
             ctx.ellipse(0, -25, 29, 24, 0, 0, Math.PI * 2);
             ctx.clip();
 
-            // 瀏海 (保留原本可愛髮型，並嚴格限制在頭盔內框內)
+            // 瀏海
             ctx.fillStyle = hairColor;
             ctx.beginPath();
             if (isPink) {
-                // Luna 斜分瀏海
                 ctx.arc(0, -26, 28.5, Math.PI * 1.03, Math.PI * 1.97);
                 ctx.quadraticCurveTo(18, -32, 10, -37);
                 ctx.quadraticCurveTo(2, -31, -6, -37);
                 ctx.quadraticCurveTo(-16, -30, -28.2, -28);
             } else {
-                // Haru 可愛雲朵瀏海
                 ctx.arc(0, -26, 28.5, Math.PI * 1.03, Math.PI * 1.97);
                 ctx.quadraticCurveTo(20, -33, 14, -37);
                 ctx.quadraticCurveTo(7, -32, 0, -37);
@@ -453,7 +660,7 @@
             ctx.fill();
             ctx.restore();
 
-            // 重新描繪頭盔面罩外框線條，確保輪廓清晰完整
+            // 重新描繪頭盔面罩外框線條
             ctx.strokeStyle = strokeColor;
             ctx.lineWidth = 3.2;
             ctx.beginPath();
@@ -467,7 +674,7 @@
             ctx.ellipse(16, -20, 4.5, 3, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // 面罩玻璃白色高光弧線（稍微向外靠且避開腮紅與外框）
+            // 面罩玻璃白色高光弧線
             ctx.strokeStyle = lerpHexColor('#ffffff', '#9ea2b0', darkenPct);
             ctx.lineWidth = 3.2;
             ctx.beginPath();
@@ -478,50 +685,39 @@
             }
             ctx.stroke();
 
-            // 表情 (存活時開心微笑，受傷 3 秒內或失去夥伴 60 秒內呈現 ＞_＜ 表情，失去生命時變成暈眩表情)
+            // 表情
             ctx.strokeStyle = strokeColor;
             ctx.fillStyle = strokeColor;
             ctx.lineWidth = 2.6;
 
             if (astro.alive) {
-                // 判斷是否顯示 ＞_＜ 表情：
-                // 1. 剩餘 1 條命時固定顯示 (astro.hp === 1)
-                // 2. 受傷後 3 秒內 (hurtTimer > 0)
-                // 3. 失去同伴後 1 分鐘內 (sadPartnerTimer > 0)
-                // 4. 失去同伴已滿 1 分鐘，但自身生命值未滿 3 條命 (partnerLost && hp < maxHp)
                 const isScaredFace = astro.hp === 1 || astro.sadPartnerTimer > 0 || astro.hurtTimer > 0 || (astro.partnerLost && astro.hp < astro.maxHp);
                 const isHappyFace = astro.happyTimer > 0 || astro.buddyHappy;
                 if (isScaredFace) {
                     // ＞_＜ 表情
                     ctx.lineWidth = 2.4;
-                    // 左眼 ＞
                     ctx.beginPath();
                     ctx.moveTo(-14, -26.5);
                     ctx.lineTo(-9.5, -24);
                     ctx.lineTo(-14, -21.5);
                     ctx.stroke();
 
-                    // 右眼 ＜
                     ctx.beginPath();
                     ctx.moveTo(14, -26.5);
                     ctx.lineTo(9.5, -24);
                     ctx.lineTo(14, -21.5);
                     ctx.stroke();
 
-                    // 小鼻子
                     ctx.beginPath();
                     ctx.arc(0, -22, 2.2, Math.PI * 1.1, Math.PI * 1.9);
                     ctx.stroke();
 
-                    // 緊閉的波浪/一字小嘴 _
                     ctx.beginPath();
                     ctx.moveTo(-4.5, -16.5);
                     ctx.quadraticCurveTo(0, -17.5, 4.5, -16.5);
                     ctx.stroke();
                 } else {
-                    // 豆豆眼或彎彎笑眼
                     if (isHappyFace) {
-                        // 吃到愛心或雙人靠近時的彎彎笑眼 ^_^
                         ctx.beginPath();
                         ctx.arc(-11, -23, 3.2, Math.PI, 0);
                         ctx.stroke();
@@ -529,29 +725,24 @@
                         ctx.arc(11, -23, 3.2, Math.PI, 0);
                         ctx.stroke();
                     } else {
-                        // 經典可愛豆豆眼
                         ctx.beginPath();
                         ctx.ellipse(-11, -24, 1.8, 2.5, 0, 0, Math.PI * 2);
                         ctx.ellipse(11, -24, 1.8, 2.5, 0, 0, Math.PI * 2);
                         ctx.fill();
                     }
 
-                    // 小鼻子
                     ctx.beginPath();
                     ctx.arc(0, -22, 2.2, Math.PI * 1.1, Math.PI * 1.9);
                     ctx.stroke();
 
-                    // 可愛嘴巴
                     ctx.beginPath();
                     if (isHappyFace) {
-                        // 開心張嘴笑 (閉合路徑，讓外框完整包住嘴巴)
                         ctx.fillStyle = '#c49a76';
                         ctx.arc(0, -17.5, 4.2, 0, Math.PI);
                         ctx.closePath();
                         ctx.fill();
                         ctx.stroke();
                     } else {
-                        // 溫柔微笑
                         ctx.arc(0, -18, 4.5, 0.15 * Math.PI, 0.85 * Math.PI);
                         ctx.stroke();
                     }
@@ -559,20 +750,17 @@
             } else {
                 // 耗盡生命時的 X X 暈眩眼與難過小嘴
                 ctx.lineWidth = 2.4;
-                // 左眼 X
                 ctx.beginPath();
                 ctx.moveTo(-14, -27);
                 ctx.lineTo(-9, -22);
                 ctx.moveTo(-9, -27);
                 ctx.lineTo(-14, -22);
-                // 右眼 X
                 ctx.moveTo(9, -27);
                 ctx.lineTo(14, -22);
                 ctx.moveTo(14, -27);
                 ctx.lineTo(9, -22);
                 ctx.stroke();
 
-                // 難過小嘴
                 ctx.beginPath();
                 ctx.arc(0, -14, 4, 1.15 * Math.PI, 1.85 * Math.PI);
                 ctx.stroke();
@@ -587,7 +775,6 @@
                 ctx.strokeStyle = strokeColor;
                 ctx.lineWidth = 2.6;
 
-                // 左翼
                 ctx.beginPath();
                 ctx.moveTo(-2, 0);
                 ctx.quadraticCurveTo(-13, -8, -12, 0);
@@ -595,7 +782,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 右翼
                 ctx.beginPath();
                 ctx.moveTo(2, 0);
                 ctx.quadraticCurveTo(13, -8, 12, 0);
@@ -603,7 +789,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 中央結扣
                 ctx.beginPath();
                 ctx.roundRect(-3.5, -3.5, 7, 7, 2.5);
                 ctx.fill();
@@ -645,35 +830,45 @@
         }
         window.addEventListener('resize', resizeCanvas);
 
+        // 本地永久存檔管理 (localStorage)
+        const STORAGE_KEY = 'space_float_demo_best_score_v1';
+        function loadBestScore() {
+            try {
+                const val = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('twinAstroBest') || '0';
+                return parseInt(val, 10) || 0;
+            } catch (e) {
+                return 0;
+            }
+        }
+        function saveBestScore(score) {
+            try {
+                localStorage.setItem(STORAGE_KEY, score.toString());
+            } catch (e) {
+                console.warn("LocalStorage save failed:", e);
+            }
+        }
+
         // 遊戲狀態變數
-        let gameState = 'START'; // 'START' | 'PLAYING' | 'GAMEOVER'
+        let gameState = 'START';
         let distance = 0;
-        let bestDistance = parseInt(localStorage.getItem('twinAstroBest') || '0', 10);
+        let bestDistance = loadBestScore();
         let difficulty = 1;
         let lastTime = 0;
         let screenShake = 0;
 
-        // 兩位主角實體
         let astronauts = [];
-        // 背景星空與星雲
         let stars = [];
         let nebulas = [];
-        // 障礙物 (隕石、太空碎片)
         let obstacles = [];
-        // 回血道具
         let items = [];
-        // 粒子特效與浮動文字
         let particles = [];
         let floatingTexts = [];
 
-        // 生成計時器
         let obstacleTimer = 0;
         let itemTimer = 0;
-        // 雙人靠近計時器
         let buddyCloseTime = 0;
         let buddyBonusTickTimer = 0;
 
-        // 初始化背景星空
         function initBackground() {
             stars = [];
             const starCount = Math.floor((width * height) / 6500);
@@ -695,7 +890,6 @@
             ];
         }
 
-        // 重置遊戲實體
         function resetGame() {
             distance = 0;
             difficulty = 1;
@@ -737,7 +931,6 @@
                     angularVelocity: 0,
                     animTime: 0,
                     phaseOffset: 0,
-                    // 失能墜落狀態
                     grayProgress: 0,
                     fallVy: 0,
                     fallVx: -25,
@@ -770,7 +963,6 @@
                     angularVelocity: 0,
                     animTime: 0,
                     phaseOffset: 1.8,
-                    // 失能墜落狀態
                     grayProgress: 0,
                     fallVy: 0,
                     fallVx: 25,
@@ -784,7 +976,6 @@
             document.getElementById('scoreDisplay').textContent = '0 m';
         }
 
-        // 更新頂部愛心 UI
         function updateHeartsUI() {
             const pinkContainer = document.getElementById('pinkHearts');
             const blueContainer = document.getElementById('blueHearts');
@@ -793,9 +984,9 @@
                 let html = '';
                 for (let i = 0; i < astro.maxHp; i++) {
                     if (i < astro.hp && astro.alive) {
-                        html += `<span class="drop-shadow-[0_0_6px_rgba(255,107,129,0.8)] transition-transform duration-200">❤️</span>`;
+                        html += `<span class="heart-glow">❤️</span>`;
                     } else {
-                        html += `<span class="opacity-30 grayscale">🖤</span>`;
+                        html += `<span class="heart-lost">🖤</span>`;
                     }
                 }
                 return html;
@@ -805,7 +996,6 @@
             if (astronauts[1]) blueContainer.innerHTML = renderHearts(astronauts[1]);
         }
 
-        // 產生粒子特效
         function spawnParticles(x, y, color, count = 14, speed = 160) {
             for (let i = 0; i < count; i++) {
                 const angle = Math.random() * Math.PI * 2;
@@ -823,7 +1013,6 @@
             }
         }
 
-        // 產生浮動提示文字
         function spawnFloatingText(x, y, text, color) {
             floatingTexts.push({
                 x,
@@ -840,11 +1029,10 @@
         function spawnObstacle() {
             const margin = 35;
             const x = margin + Math.random() * (width - margin * 2);
-            const r = Math.random() * 16 + 18; // 半徑 18 ~ 34
+            const r = Math.random() * 16 + 18;
             const types = ['meteor', 'meteor', 'satellite', 'scrap'];
             const type = types[Math.floor(Math.random() * types.length)];
 
-            // 生成不規則隕石頂點
             const vertices = [];
             const numVerts = 9;
             for (let i = 0; i < numVerts; i++) {
@@ -853,7 +1041,6 @@
                 vertices.push({ x: Math.cos(ang) * dist, y: Math.sin(ang) * dist });
             }
 
-            // 隨難度提升速度，並帶有些微水平漂移
             const baseSpeed = (165 + Math.random() * 95) * (1 + (difficulty - 1) * 0.22);
             const vx = (Math.random() - 0.5) * 75 * difficulty;
 
@@ -883,14 +1070,12 @@
             });
         }
 
-        // 繪製障礙物 (隕石 / 太空碎片)
         function drawObstacle(ctx, obs) {
             ctx.save();
             ctx.translate(obs.x, obs.y);
             ctx.rotate(obs.rotation);
 
             if (obs.type === 'meteor') {
-                // 隕石主體
                 const grad = ctx.createRadialGradient(-obs.visualRadius * 0.3, -obs.visualRadius * 0.3, 4, 0, 0, obs.visualRadius);
                 grad.addColorStop(0, '#9a8c98');
                 grad.addColorStop(0.6, '#5c5470');
@@ -909,23 +1094,19 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 隕石坑洞
                 ctx.fillStyle = 'rgba(28, 25, 40, 0.55)';
                 ctx.beginPath();
                 ctx.arc(-obs.visualRadius * 0.25, -obs.visualRadius * 0.15, obs.visualRadius * 0.22, 0, Math.PI * 2);
                 ctx.arc(obs.visualRadius * 0.28, obs.visualRadius * 0.22, obs.visualRadius * 0.16, 0, Math.PI * 2);
                 ctx.fill();
             } else if (obs.type === 'satellite') {
-                // 廢棄人造衛星碎片
                 const r = obs.visualRadius;
-                // 太陽能板
                 ctx.fillStyle = '#3b82f6';
                 ctx.strokeStyle = '#93c5fd';
                 ctx.lineWidth = 1.8;
                 ctx.fillRect(-r * 1.35, -r * 0.32, r * 2.7, r * 0.64);
                 ctx.strokeRect(-r * 1.35, -r * 0.32, r * 2.7, r * 0.64);
 
-                // 金色主機艙
                 ctx.fillStyle = '#f59e0b';
                 ctx.strokeStyle = '#fef3c7';
                 ctx.beginPath();
@@ -933,13 +1114,11 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 天線
                 ctx.beginPath();
                 ctx.moveTo(0, -r * 0.55);
                 ctx.lineTo(0, -r * 0.95);
                 ctx.stroke();
             } else {
-                // 金屬太空垃圾碎片
                 const r = obs.visualRadius;
                 ctx.fillStyle = '#64748b';
                 ctx.strokeStyle = '#cbd5e1';
@@ -953,7 +1132,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 警示紅燈
                 ctx.fillStyle = '#fb7185';
                 ctx.beginPath();
                 ctx.arc(0, 0, r * 0.22, 0, Math.PI * 2);
@@ -963,14 +1141,12 @@
             ctx.restore();
         }
 
-        // 繪製回血道具 (發光愛心能量膠囊 - 圓潤飽滿愛心)
         function drawHealItem(ctx, item) {
             ctx.save();
             ctx.translate(item.x, item.y);
             const scale = 1 + Math.sin(item.pulse) * 0.12;
             ctx.scale(scale, scale);
 
-            // 外圍光暈
             const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, 26);
             glow.addColorStop(0, 'rgba(255, 118, 168, 0.7)');
             glow.addColorStop(1, 'rgba(255, 118, 168, 0)');
@@ -979,7 +1155,6 @@
             ctx.arc(0, 0, 26, 0, Math.PI * 2);
             ctx.fill();
 
-            // 氣泡外框
             ctx.fillStyle = 'rgba(255, 240, 246, 0.94)';
             ctx.strokeStyle = '#ff75a0';
             ctx.lineWidth = 2.5;
@@ -988,7 +1163,6 @@
             ctx.fill();
             ctx.stroke();
 
-            // 圓潤飽滿的愛心圖案
             ctx.fillStyle = '#ff477e';
             ctx.beginPath();
             ctx.moveTo(0, 7.2);
@@ -1005,7 +1179,7 @@
         // ==========================================
         // 5. 多點觸控 & 滑鼠 & 鍵盤操控系統
         // ==========================================
-        const activePointers = new Map(); // pointerId -> { astro, offsetX, offsetY }
+        const activePointers = new Map();
 
         function handlePointerDown(e) {
             if (gameState !== 'PLAYING') return;
@@ -1015,23 +1189,20 @@
             const px = e.clientX - rect.left;
             const py = e.clientY - rect.top;
 
-            // 尋找距離觸控點最近、尚存活且未被其他手指鎖定的太空人
             let bestAstro = null;
             let bestDist = Infinity;
 
             for (const astro of astronauts) {
-                if (!astro.alive) continue; // 已失去三條命的太空人不可再操控
+                if (!astro.alive) continue;
                 if (astro.pointerId !== null) continue;
 
                 const d = Math.hypot(px - astro.x, py - astro.y);
-                // 給予寬鬆的手指觸控半徑 (135px)，提升手機操作手感
                 if (d < 140 && d < bestDist) {
                     bestDist = d;
                     bestAstro = astro;
                 }
             }
 
-            // 若手指點擊在畫面左半或右半較遠處，且該側太空人未被佔用，也可直接引導過去
             if (!bestAstro) {
                 const preferPink = px < width * 0.5;
                 const candidate = preferPink ? astronauts[0] : astronauts[1];
@@ -1046,7 +1217,6 @@
 
             if (bestAstro) {
                 bestAstro.pointerId = e.pointerId;
-                // 增加向上偏移量 (touchLift = 58px)，讓手指按住拖曳時，人物會位於手指上方，不會被手指遮擋
                 const touchLift = e.pointerType === 'touch' ? 58 : 0;
                 const dist = Math.hypot(px - bestAstro.x, py - bestAstro.y);
                 const useOffset = dist < 85;
@@ -1071,7 +1241,6 @@
             if (!binding) return;
 
             const astro = binding.astro;
-            // 若操控過程中該太空人剛好失去三條命，立即解除控制權
             if (!astro.alive) {
                 astro.pointerId = null;
                 activePointers.delete(e.pointerId);
@@ -1100,7 +1269,6 @@
         canvas.addEventListener('pointerup', handlePointerUp);
         canvas.addEventListener('pointercancel', handlePointerUp);
 
-        // 鍵盤輔助控制 (WASD 控制粉紅，方向鍵控制淺藍)
         const keys = {};
         window.addEventListener('keydown', (e) => { keys[e.code] = true; });
         window.addEventListener('keyup', (e) => { keys[e.code] = false; });
@@ -1109,7 +1277,6 @@
             const moveSpeed = 360;
             const pad = 32;
 
-            // 粉紅太空人: W A S D
             const pink = astronauts[0];
             if (pink && pink.alive && pink.pointerId === null) {
                 if (keys['KeyA']) pink.targetX -= moveSpeed * dt;
@@ -1120,7 +1287,6 @@
                 pink.targetY = Math.max(pad + 50, Math.min(height - pad, pink.targetY));
             }
 
-            // 淺藍太空人: 方向鍵
             const blue = astronauts[1];
             if (blue && blue.alive && blue.pointerId === null) {
                 if (keys['ArrowLeft']) blue.targetX -= moveSpeed * dt;
@@ -1136,7 +1302,6 @@
         // 6. 遊戲主迴圈更新與碰撞判定
         // ==========================================
         function update(dt) {
-            // 背景星空持續流動
             stars.forEach(s => {
                 s.y += s.speed * (gameState === 'PLAYING' ? (1 + (difficulty - 1) * 0.3) : 0.4) * dt;
                 s.twinkle += dt * 3;
@@ -1148,7 +1313,6 @@
 
             if (gameState !== 'PLAYING') return;
 
-            // 更新漂流距離與難度曲線（每秒約 5 公尺平滑遞增）
             distance += dt * 5 * (1 + (difficulty - 1) * 0.15);
             difficulty = 1 + Math.min(2.5, distance / 300);
             document.getElementById('scoreDisplay').textContent = `${Math.floor(distance)} m`;
@@ -1159,7 +1323,6 @@
 
             applyKeyboardControl(dt);
 
-            // 更新兩位太空人狀態
             let anyAlive = false;
             for (const astro of astronauts) {
                 astro.animTime += dt;
@@ -1171,7 +1334,6 @@
                     if (astro.hurtTimer > 0) astro.hurtTimer -= dt;
                     if (astro.sadPartnerTimer > 0) astro.sadPartnerTimer -= dt;
 
-                    // 平滑追蹤目標位置 (太空漂浮慣性感)
                     const lerpFactor = Math.min(1, dt * 14);
                     const prevX = astro.x;
                     const prevY = astro.y;
@@ -1180,31 +1342,27 @@
                     astro.vx = (astro.x - prevX) / Math.max(dt, 0.001);
                     astro.vy = (astro.y - prevY) / Math.max(dt, 0.001);
 
-                    // 保留原本隨漂浮與移動慢慢旋轉的動態，並透過角速度平滑阻尼讓旋轉絲滑不卡頓
                     const baseSpinDir = astro.type === 'pink' ? 1 : -1;
-                    const baseSpinSpeed = baseSpinDir * 0.75; // 持續平穩的 360 度太空漂流旋轉
+                    const baseSpinSpeed = baseSpinDir * 0.75;
                     const moveSpinInfluence = Math.max(-3.2, Math.min(3.2, astro.vx * 0.005));
                     const targetAngularVel = baseSpinSpeed + moveSpinInfluence;
                     astro.angularVelocity += (targetAngularVel - astro.angularVelocity) * Math.min(1, dt * 8);
                     astro.currentAngle += astro.angularVelocity * dt;
                 } else {
-                    // 失去三條命後：顏色漸暗，受重力往下掉落，不可再操控
                     astro.grayProgress = Math.min(1, astro.grayProgress + dt * 1.6);
-                    astro.fallVy += 380 * dt; // 向下加速墜落
+                    astro.fallVy += 380 * dt;
                     astro.y += astro.fallVy * dt;
                     astro.x += astro.fallVx * dt;
                     astro.fallRotation += astro.fallRotSpeed * dt;
                 }
             }
 
-            // 兩位太空人皆失去生命且掉出畫面後結束遊戲
             const allFallenOut = astronauts.every(a => !a.alive && a.y > height + 100);
             if (!anyAlive && allFallenOut) {
                 triggerGameOver();
                 return;
             }
 
-            // 雙人靠近互動與 Bonus 加分邏輯
             const luna = astronauts[0];
             const haru = astronauts[1];
             if (luna && haru && luna.alive && haru.alive) {
@@ -1215,7 +1373,6 @@
                     if (buddyCloseTime >= 3.0) {
                         luna.buddyHappy = true;
                         haru.buddyHappy = true;
-                        // 進入開心狀態 1 秒後（即靠近滿 4 秒起），每秒獲得 10 分 Bonus
                         if (buddyCloseTime >= 4.0) {
                             buddyBonusTickTimer += dt;
                             if (buddyBonusTickTimer >= 1.0) {
@@ -1240,29 +1397,24 @@
                 if (haru) haru.buddyHappy = false;
             }
 
-            // 生成障礙物
             obstacleTimer -= dt;
             if (obstacleTimer <= 0) {
                 spawnObstacle();
-                // 難度越高間隔越短
                 obstacleTimer = Math.max(0.32, (0.95 / difficulty) + Math.random() * 0.35);
             }
 
-            // 生成回血道具
             itemTimer -= dt;
             if (itemTimer <= 0) {
                 spawnHealItem();
                 itemTimer = 7.5 + Math.random() * 4.5;
             }
 
-            // 更新障礙物與碰撞檢測
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 const obs = obstacles[i];
                 obs.x += obs.vx * dt;
                 obs.y += obs.vy * dt;
                 obs.rotation += obs.rotSpeed * dt;
 
-                // 邊界反彈
                 if (obs.x < obs.visualRadius || obs.x > width - obs.visualRadius) {
                     obs.vx *= -1;
                 }
@@ -1284,7 +1436,6 @@
                 }
             }
 
-            // 更新回血道具與拾取檢測
             for (let i = items.length - 1; i >= 0; i--) {
                 const item = items[i];
                 item.y += item.vy * dt;
@@ -1292,7 +1443,7 @@
 
                 let collected = false;
                 for (const astro of astronauts) {
-                    if (!astro.alive) continue; // 已墜落失能的太空人無法拾取道具
+                    if (!astro.alive) continue;
 
                     const dist = Math.hypot(item.x - astro.x, item.y - astro.y);
                     if (dist < item.radius + astro.radius) {
@@ -1307,7 +1458,6 @@
                 }
             }
 
-            // 更新粒子特效
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.x += p.vx * dt;
@@ -1316,7 +1466,6 @@
                 if (p.life <= 0) particles.splice(i, 1);
             }
 
-            // 更新浮動文字
             for (let i = floatingTexts.length - 1; i >= 0; i--) {
                 const ft = floatingTexts[i];
                 ft.y -= 38 * dt;
@@ -1325,9 +1474,7 @@
             }
         }
 
-        // 太空人撞擊障礙物處理
         function handleAstroHit(astro, hitX, hitY) {
-            // 撞到障礙物時，雙人靠近的開心狀態立即停止並重新計算時間
             buddyCloseTime = 0;
             buddyBonusTickTimer = 0;
             for (const a of astronauts) {
@@ -1346,28 +1493,24 @@
             updateHeartsUI();
 
             if (astro.hp <= 0) {
-                // 失去三條命：變暗、掉落、不可再操控
                 astro.alive = false;
                 astro.fallRotation = astro.currentAngle || 0;
                 astro.fallRotSpeed = astro.type === 'pink' ? -1.4 : 1.4;
-                astro.fallVy = -90; // 先微幅向上彈起再向下掉落
+                astro.fallVy = -90;
                 if (astro.pointerId !== null) {
                     activePointers.delete(astro.pointerId);
                     astro.pointerId = null;
                 }
 
-                // 檢查是否為第一位陣亡的小太空人（另一位仍存活）
                 const alivePartners = astronauts.filter(other => other.id !== astro.id && other.alive);
                 const isFirstDown = alivePartners.length > 0;
 
-                // 讓倖存的另一位小太空人眼睛變成 ＞_＜ 維持 60 秒，並標記已失去同伴
                 for (const other of alivePartners) {
                     other.partnerLost = true;
                     other.sadPartnerTimer = 60.0;
                 }
 
                 sound.playFall();
-                // 只有第一位陣亡時跳出提示字樣，第二位陣亡時不跳字
                 if (isFirstDown) {
                     spawnFloatingText(astro.x, astro.y - 30, `${astro.name} Down!`, '#cbd5e1');
                 }
@@ -1378,7 +1521,6 @@
             }
         }
 
-        // 太空人吃到回血道具處理
         function handleAstroHeal(astro) {
             sound.playHeal();
             astro.happyTimer = 1.2;
@@ -1390,7 +1532,6 @@
                 const upColor = astro.type === 'pink' ? '#fbb6d3' : '#b9dcfa';
                 spawnFloatingText(astro.x, astro.y - 35, `${astro.name} 1UP`, upColor);
             } else {
-                // 若已滿血則給予額外漂流加分
                 distance += 35;
                 spawnFloatingText(astro.x, astro.y - 35, 'Bonus +35m', '#ffe66d');
             }
@@ -1401,7 +1542,7 @@
             const finalM = Math.floor(distance);
             if (finalM > bestDistance) {
                 bestDistance = finalM;
-                localStorage.setItem('twinAstroBest', bestDistance.toString());
+                saveBestScore(bestDistance);
             }
 
             document.getElementById('finalScore').textContent = `${finalM} m`;
@@ -1417,7 +1558,6 @@
         function draw() {
             ctx.save();
 
-            // 太空深邃背景
             const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
             bgGrad.addColorStop(0, '#070913');
             bgGrad.addColorStop(0.5, '#0e1329');
@@ -1425,7 +1565,6 @@
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, width, height);
 
-            // 柔和星雲光暈
             nebulas.forEach(n => {
                 const rad = ctx.createRadialGradient(n.x, n.y, 10, n.x, n.y, n.r);
                 rad.addColorStop(0, n.color);
@@ -1434,7 +1573,6 @@
                 ctx.fillRect(0, 0, width, height);
             });
 
-            // 閃爍星星
             stars.forEach(s => {
                 const twinkleAlpha = s.alpha * (0.65 + 0.35 * Math.sin(s.twinkle));
                 ctx.fillStyle = `rgba(255, 255, 255, ${twinkleAlpha})`;
@@ -1443,7 +1581,6 @@
                 ctx.fill();
             });
 
-            // 震動偏移
             if (screenShake > 0) {
                 const sx = (Math.random() - 0.5) * screenShake;
                 const sy = (Math.random() - 0.5) * screenShake;
@@ -1451,7 +1588,6 @@
             }
 
             if (gameState === 'PLAYING' || gameState === 'GAMEOVER') {
-                // 繪製兩位太空人之間的微弱星光牽絆線 (當兩人都還存活時)
                 if (astronauts[0] && astronauts[1] && astronauts[0].alive && astronauts[1].alive) {
                     const grad = ctx.createLinearGradient(astronauts[0].x, astronauts[0].y, astronauts[1].x, astronauts[1].y);
                     grad.addColorStop(0, 'rgba(251, 182, 211, 0.22)');
@@ -1466,15 +1602,10 @@
                     ctx.setLineDash([]);
                 }
 
-                // 繪製回血道具
                 items.forEach(item => drawHealItem(ctx, item));
-
-                // 繪製障礙物
                 obstacles.forEach(obs => drawObstacle(ctx, obs));
 
-                // 繪製兩位小太空人
                 astronauts.forEach(astro => {
-                    // 觸控引導光圈 (手指按住時顯示)
                     if (astro.alive && astro.pointerId !== null) {
                         ctx.save();
                         ctx.strokeStyle = astro.type === 'pink' ? 'rgba(251, 182, 211, 0.45)' : 'rgba(185, 220, 250, 0.45)';
@@ -1487,7 +1618,6 @@
                     drawAstronaut(ctx, astro);
                 });
 
-                // 繪製粒子特效
                 particles.forEach(p => {
                     ctx.save();
                     ctx.globalAlpha = Math.max(0, p.life);
@@ -1498,11 +1628,10 @@
                     ctx.restore();
                 });
 
-                // 繪製浮動文字
                 floatingTexts.forEach(ft => {
                     ctx.save();
                     ctx.globalAlpha = Math.min(1, ft.life);
-                    ctx.font = 'bold 16px "Fredoka", "Noto Sans TC", sans-serif';
+                    ctx.font = 'bold 16px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillStyle = ft.color;
                     ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1515,7 +1644,6 @@
             ctx.restore();
         }
 
-        // 首頁預覽畫布動畫 (展示兩位小太空人漂浮揮手，背景純淨無雜物)
         let previewTime = 0;
         function drawStartPreview(dt) {
             if (gameState !== 'START') return;
@@ -1528,7 +1656,6 @@
 
             previewCtx.clearRect(0, 0, pw, ph);
 
-            // 根據縮放比例計算恰到好處的水平間距，讓揮手時手部剛好輕輕碰到一瞬間
             const previewScale = 0.88;
             const halfGap = Math.max(pw * 0.175, 52 * previewScale);
 
@@ -1570,7 +1697,6 @@
             drawAstronaut(previewCtx, bluePreview);
         }
 
-        // 主時間軸
         function gameLoop(timestamp) {
             if (!lastTime) lastTime = timestamp;
             const dt = Math.min(0.05, (timestamp - lastTime) / 1000);
@@ -1618,7 +1744,6 @@
             document.getElementById('soundToggleBtn').textContent = sound.enabled ? '🔊' : '🔇';
         });
 
-        // 啟動初始化
         window.onload = function () {
             resizeCanvas();
             initBackground();
